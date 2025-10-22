@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Merge Quest</title>
+    <link rel="icon" type="image/png" href="../assets/images/ANIMAL_MERGE_LOGO1.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="login-screen" class="screen active">
+        <div class="modal-content login-box">
+            <div id="game-title"></div>
+            <h2>Welcome, Seeker!</h2>
+            <form id="login-form">
+                <input type="text" id="username-input" placeholder="Username" required autocomplete="username">
+                <input type="password" id="password-input" placeholder="Password" required autocomplete="current-password">
+                <button type="submit" id="login-btn" class="menu-btn">Login</button>
+            </form>
+            <p id="auth-message" class="error-message"></p>
+            <button id="register-toggle-btn" class="menu-btn secondary">Need an Account? Register</button>
+            
+            <button id="leaderboard-btn-menu" class="menu-btn secondary">View Leaderboard</button>
+        </div>
+    </div>
+    
+    <div id="category-screen" class="screen hidden">
+        <div class="modal-content">
+            <div id="game-title"></div> 
+            <h2>Select Your Animal Kingdom</h2>
+            <div id="category-grid" class="selection-grid">
+                <label class="category-option" data-category="Jungle">
+                    <input type="radio" name="animal-category" value="Jungle" required>
+                    <img src="../assets/images/standard.png" alt="Standard Animals">
+                    <span class="category-name">🌿 Standard</span>
+                </label>
+                <label class="category-option" data-category="Ocean">
+                    <input type="radio" name="animal-category" value="Ocean">
+                    <img src="../assets/images/ocean.png" alt="Ocean Animals">
+                    <span class="category-name">🌊 Ocean</span>
+                </label>
+                <label class="category-option" data-category="Insect">
+                    <input type="radio" name="animal-category" value="Insect">
+                    <img src="../assets/images/insect.png" alt="Insect Animals">
+                    <span class="category-name">🦋 Insect</span>
+                </label>
+                <label class="category-option" data-category="Mythical">
+                    <input type="radio" name="animal-category" value="Mythical">
+                    <img src="../assets/images/mythical.png" alt="Mythical Creatures">
+                    <span class="category-name">✨ Mythical</span>
+                </label>
+                <label class="category-option" data-category="Jurassic">
+                    <input type="radio" name="animal-category" value="Jurassic">
+                    <img src="../assets/images/jurrasic.png" alt="Jurassic Animals">
+                    <span class="category-name">🦖 Jurassic</span>
+                </label>
+                <label class="category-option" data-category="Cat Family">
+                    <input type="radio" name="animal-category" value="Cat Family">
+                    <img src="../assets/images/cat.png" alt="Cat Family Animals">
+                    <span class="category-name">🐈 Cat Family</span>
+                </label>
+                <label class="category-option" data-category="Swamp">
+                    <input type="radio" name="animal-category" value="Swamp">
+                    <img src="../assets/images/swamp.jpg" alt="Swamp Animals">
+                    <span class="category-name">🐸 Swamp</span>
+                </label>
+                <div id="about-option-btn" class="category-option">
+                    <img src="../assets/images/ANIMAL_MERGE_LOGO.jpg" alt="About Game">
+                    <span class="category-name">ℹ️ About</span>
+                </div>
+            </div>            
+            <button id="next-to-time-btn" class="menu-btn" disabled>Next →</button>
+            <button id="logout-btn" class="menu-btn tertiary">Logout</button> </div>
+        </div>
+    </div>
+    
+    <div id="time-screen" class="screen hidden">
+        <div class="menu-content">
+            <h2 >⏱️Time Limit for  <span id="selected-category-name"></span></h2>
+            <div id="time-options-container" class="time-options-container">
+                <label>
+                    <input type="radio" name="time-limit" value="1">
+                    1 Minutes
+                </label>
+                <label>
+                    <input type="radio" name="time-limit" value="3">
+                    3 Minutes
+                </label>
+                <label>
+                    <input type="radio" name="time-limit" value="5">
+                    5 Minutes
+                </label>
+                <label>
+                    <input type="radio" name="time-limit" value="0" checked>
+                    Unlimited
+                </label>
+            </div>
+            <div class="button-group">
+                <button id="back-to-category-btn" class="menu-btn secondary">← Back</button>
+                <button id="start-game-btn" class="menu-btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="about-screen" class="screen hidden">
+        <div class="menu-content">
+            <h1 class="game-title">About the Game</h1>
+            <p class="about-text">
+                Welcome to <strong>Animal Merge Quest</strong>! Your goal is to discover new, amazing animals by merging the ones you already have.
+                <br><br>
+                Simply drag two animals from your inventory into the merge slots and see what new creature you can create. Each brand new discovery earns you points! Can you find them all before time runs out?
+            </p>
+            <button id="back-from-about-btn" class="menu-btn">← Back to Menu</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <header id="game-header">
+            <div class="header-section" id="logo-section">
+                <div id="logo-container">
+                    <img class="game-logo" src="../assets/images/ANIMAL_MERGE_LOGO.jpg">
+                </div>
+                <h2 class="logo-text">Animal Merge</h2>
+            </div>
+            <div class="header-section" id="game-stats">
+                 <div id="timer">⏱ Time: <span id="timer-value">--:--</span></div>
+                 <div id="score">⭐ Score: <span id="score-value">0</span></div>
+                 <div id="discoveries">🧠 Found: <span id="discovery-count">0/??</span></div>
+            </div>
+            <div class="header-section" id="game-controls">
+                <button id="pause-btn" class="header-btn">Pause ⏸️</button>
+                <button id="restart-btn" class="header-btn">Restart 🔄</button>
+                <button id="exit-btn" class="header-btn exit-btn">Exit 🚪</button>
+                <button id="mode-toggle-btn" class="mode-toggle-btn">☀️</button>
+            </div>
+        </header>
+
+        <main id="game-container">
+            <section id="inventory-panel">
+                <h2 class="inventorytext">Inventory</h2>
+                <div id="inventory-list"></div>
+            </section>
+            <section id="merge-panel">
+                <div id="drop-zone-a" class="drop-zone">Drag Item A Here</div>
+                <span class="merge-symbol">+</span>
+                <div id="drop-zone-b" class="drop-zone">Drag Item B Here</div>
+                <div id="merge-result"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden">
+        <div id="game-over-box">
+            <h1>⏰ Time's Up!</h1>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <p>New Discoveries: <span id="final-discoveries">0</span></p>
+            <p id="submission-status-message">Submitting score...</p>
+            <button id="play-again-btn" class="menu-btn">Play Again</button>
+            <button id="back-to-menu-btn" class="menu-btn secondary">Back to Menu</button>
+            <button id="leaderboard-btn" class="menu-btn secondary">View Leaderboard</button>
+        </div>
+    </div>
+    
+    <div id="leaderboard-screen" class="screen hidden">
+        <div id="leaderboard-box">
+            <h1>🏆 Leaderboard</h1>
+            <div class="leaderboard-controls">
+                <select id="leaderboard-category-select"></select>
+            </div>
+            
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Discoveries</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+            <button id="leaderboard-back-btn" class="menu-btn secondary">Back to Menu</button>
+        </div>
+    </div>
+
+    <div id="pause-screen" class="screen hidden">
+        <div class="pause-box">
+            <h1>Game Paused</h1>
+            <button id="resume-btn" class="menu-btn">Resume</button>
+        </div>
+    </div>
+
+   <div id="toast-message" class="toast hidden"></div>
+    <div id="warning-overlay" class="hidden"></div>
+    
+    <div id="custom-modal" class="modal hidden">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="modal-cancel-btn" class="menu-btn secondary">Cancel</button>
+                <button id="modal-confirm-btn" class="menu-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
