@@ -103,7 +103,10 @@ body {
 /* === MENU & MODAL CONTENT === */
 .modal-content {
     text-align: center;
-    background-color: var(--menu-bg); /* Use variable */
+    background-image: url('../assets/images/model.png');
+     background-size: cover; /* Scales the background image to cover the entire container, cropping if necessary */
+    background-position: center; /* Centers the background image within the container */
+    /* Use variable */
     padding: 40px 60px;
     border-radius: 20px;
     box-shadow: var(--menu-shadow); /* Use variable */
@@ -1044,24 +1047,36 @@ body {
 }
 /* Leaderboard Screen Styles */
 #leaderboard-screen {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Retaining the vibrant dark background */
+    background: url('../assets/images/model.png') center center no-repeat;
+    background-size: contain;
+    background-position: center;
+    background-repeat: repeat;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Added a modern font */
 }
 
 #leaderboard-box {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    /* IMPROVED: Glassmorphism effect for a sleek, modern dark theme */
+    
+    /* Set the image as background */
+    background: url('../assets/images/leaderboard.png') center center no-repeat;
+    background-size: contain;
+    background-position: center;
+    background-repeat: repeat;
+    backdrop-filter: blur(15px); /* Slightly stronger blur */
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
     max-width: 800px;
     width: 90%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: slideUp 0.5s ease-out;
+    /* IMPROVED: More visible border for the frosted glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    animation: slideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation curve */
 }
 
 @keyframes slideUp {
@@ -1076,16 +1091,28 @@ body {
 }
 
 #leaderboard-box h1 {
-    text-align: center;
-    color: #333;
-    font-size: 2.5em;
-    margin-bottom: 25px;
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+/* Direct Replacement CSS for BROWN-GOLDISH SHINY 3D Text */
+text-align: center;
+font-size: 3em; 
+margin-bottom: 25px;
+font-weight: 800;
+
+/* SHINE EFFECT (Gradient Fill - Brown-Gold) */
+/* Shifting the gradient to more brown-gold tones */
+background: linear-gradient(to bottom, #DAA520, #B8860B); /* Goldenrod to DarkGoldenrod */
+-webkit-background-clip: text; 
+background-clip: text;
+-webkit-text-fill-color: transparent;
+color: #DAA520; /* Fallback base color set to Goldenrod */
+
+/* 3D SHADOW EFFECT (Deeper, more prominent brown-gold shadows) */
+text-shadow:
+  /* Top-left subtle outline/highlight - still bright for some shine */
+  -2px -2px 0 #FFD700, /* Pure Gold for a distinct highlight */
+  /* Right-bottom shadow layers for depth - using richer, darker browns */
+  3px 3px 0 #A0522D, /* Sienna - for main shadow */
+  5px 5px 0 #8B4513, /* SaddleBrown - for deeper shadow */
+  7px 7px 0 #6D330F;  /* Darker Brown - for the deepest part of the shadow */
 }
 
 .leaderboard-controls {
@@ -1096,22 +1123,23 @@ body {
 
 #leaderboard-category-select {
     padding: 12px 20px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #555; /* Darker border for contrast */
     border-radius: 50px;
-    background: white;
-    font-size: 1em;
+    background: rgba(255, 255, 255, 0.9); /* Slightly more opaque white */
+    font-size: 1.1em; /* Slightly larger font */
     color: #333;
     outline: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
     min-width: 200px;
     text-align: center;
+    cursor: pointer; /* Added cursor */
 }
 
 #leaderboard-category-select:focus {
-    border-color: #4ecdc4;
-    box-shadow: 0 4px 20px rgba(78, 205, 196, 0.3);
-    transform: translateY(-2px);
+    border-color: #f5d020; /* Color pulled from the new H1 gradient */
+    box-shadow: 0 4px 20px rgba(245, 208, 32, 0.5);
+    transform: translateY(-2px) scale(1.02);
 }
 
 #leaderboard-table {
@@ -1121,10 +1149,11 @@ body {
     background: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
 }
 
 #leaderboard-table thead {
+    /* Retaining the nice teal/blue gradient for the header */
     background: linear-gradient(135deg, #4ecdc4, #44a08d);
 }
 
@@ -1132,30 +1161,31 @@ body {
     padding: 18px 15px;
     text-align: center;
     color: white;
-    font-weight: 600;
+    font-weight: 700; /* Bolder header text */
     font-size: 1.1em;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px; /* Tighter letter-spacing */
     border: none;
 }
 
 #leaderboard-table tbody tr {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Springier transition */
+    border-bottom: 1px solid #e0e0e0; /* Lighter border */
 }
 
 #leaderboard-table tbody tr:hover {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* IMPROVED: More distinct and cleaner hover effect */
+    background: #f0f4f7;
+    transform: translateY(-2px); /* Lift slightly instead of scaling */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 #leaderboard-table tbody tr:nth-child(even) {
-    background-color: #f8f9fa;
+    background-color: #f8f8f8;
 }
 
 #leaderboard-table tbody tr:nth-child(even):hover {
-    background: linear-gradient(135deg, #f1f3f4, #e8eaeb);
+    background: #e9eff3;
 }
 
 #leaderboard-table td {
@@ -1169,25 +1199,81 @@ body {
 
 /* Rank column styling */
 #leaderboard-table td:first-child {
-    font-weight: 700;
-    font-size: 1.2em;
+    font-weight: 800; /* Bolder rank */
+    font-size: 1.3em;
     color: #4ecdc4;
 }
 
-/* Special styling for top 3 ranks */
+/* Special styling for top 3 ranks - Gold, Silver, Bronze (IMPROVED) */
+
+/* --- RANK 1: GOLD --- */
 #leaderboard-table tbody tr:nth-child(1) {
-    background: linear-gradient(135deg, #fff9c4, #ffeb3b);
-    border-left: 4px solid #ffd700;
+    /* Stronger, more metallic gold background gradient */
+    background: linear-gradient(90deg, #ffeb3b, #fff7a1); 
+    border-left: 5px solid #ffc107; /* Brighter gold border */
+    /* Added a subtle box shadow for a "shining" aura */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); 
+    transform: scale(1.02); /* Slight scale to pop out */
+    font-weight: bold; /* Bold the entire row */
+    transition: all 0.3s ease-in-out;
 }
 
+#leaderboard-table tbody tr:nth-child(1) td {
+    font-size: 1.25em; /* Increased font size for all cells */
+}
+
+#leaderboard-table tbody tr:nth-child(1) td:first-child, /* Rank */
+#leaderboard-table tbody tr:nth-child(1) td:nth-child(3) { /* Score */
+    color: #a07a00; /* Darker, richer text color for contrast */
+    font-weight: 900;
+    /* Added a glow effect to the rank and score */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+
+/* --- RANK 2: SILVER --- */
 #leaderboard-table tbody tr:nth-child(2) {
-    background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
-    border-left: 4px solid #c0c0c0;
+    /* Stronger silver background gradient */
+    background: linear-gradient(90deg, #e0e0e0, #f7f7f7); 
+    border-left: 5px solid #a9a9a9; /* Darker silver border */
+    /* Added a subtle box shadow for a "shining" aura */
+    box-shadow: 0 0 10px rgba(192, 192, 192, 0.5); 
+    font-weight: bold;
 }
 
+#leaderboard-table tbody tr:nth-child(2) td {
+    font-size: 1.2em; /* Increased font size */
+}
+
+#leaderboard-table tbody tr:nth-child(2) td:first-child, /* Rank */
+#leaderboard-table tbody tr:nth-child(2) td:nth-child(3) { /* Score */
+    color: #4f4f4f;
+    font-weight: 800;
+    /* Added a glow effect to the rank and score */
+    text-shadow: 0 0 5px rgba(192, 192, 192, 0.8), 0 0 8px rgba(192, 192, 192, 0.4);
+}
+
+
+/* --- RANK 3: BRONZE --- */
 #leaderboard-table tbody tr:nth-child(3) {
-    background: linear-gradient(135deg, #ffccbc, #ffab91);
-    border-left: 4px solid #cd7f32;
+    /* Stronger bronze background gradient */
+    background: linear-gradient(90deg, #ffcc99, #f7e0d3); 
+    border-left: 5px solid #8b4513; /* Darker bronze border */
+    /* Added a subtle box shadow for a "shining" aura */
+    box-shadow: 0 0 8px rgba(205, 127, 50, 0.5);
+    font-weight: 600;
+}
+
+#leaderboard-table tbody tr:nth-child(3) td {
+    font-size: 1.15em; /* Increased font size */
+}
+
+#leaderboard-table tbody tr:nth-child(3) td:first-child, /* Rank */
+#leaderboard-table tbody tr:nth-child(3) td:nth-child(3) { /* Score */
+    color: #8b4513;
+    font-weight: 800;
+    /* Added a glow effect to the rank and score */
+    text-shadow: 0 0 4px rgba(205, 127, 50, 0.8), 0 0 6px rgba(205, 127, 50, 0.3);
 }
 
 /* Player name styling */
@@ -1195,20 +1281,20 @@ body {
     font-weight: 600;
     color: #2c3e50;
     text-align: left;
-    padding-left: 25px;
+    padding-left: 30px; /* More padding */
 }
 
 /* Score styling */
 #leaderboard-table td:nth-child(3) {
-    font-weight: 700;
+    font-weight: 800; /* Bolder score */
     color: #e74c3c;
-    font-size: 1.1em;
+    font-size: 1.2em;
 }
 
 /* Discoveries styling */
 #leaderboard-table td:nth-child(4) {
     color: #27ae60;
-    font-weight: 600;
+    font-weight: 700; /* Bolder discoveries */
 }
 
 /* Empty state styling */
@@ -1225,22 +1311,27 @@ body {
     position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95); /* Slightly less opaque */
     border: none;
     border-radius: 50%;
     width: 50px;
     height: 50px;
     font-size: 1.5em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease-in-out;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10; /* Ensure it's above the box */
+    color: #333; /* Default icon color */
 }
 
 .leaderboard-back-btn:hover {
-    background: white;
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: #f5d020; /* Highlight color on hover */
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(245, 208, 32, 0.5);
+    color: #02125a; /* Dark text on bright background */
 }
+
+
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -1250,7 +1341,7 @@ body {
     }
     
     #leaderboard-box h1 {
-        font-size: 2em;
+        font-size: 2.5em; /* Slightly adjusted size */
     }
     
     #leaderboard-table {
@@ -1259,11 +1350,11 @@ body {
     
     #leaderboard-table th,
     #leaderboard-table td {
-        padding: 12px 8px;
+        padding: 12px 10px;
     }
     
     #leaderboard-table td:nth-child(2) {
-        padding-left: 15px;
+        padding-left: 20px; /* Adjusted padding */
     }
 }
 
@@ -1273,16 +1364,22 @@ body {
     }
     
     #leaderboard-box h1 {
-        font-size: 1.8em;
+        font-size: 2em;
     }
     
     #leaderboard-table {
         font-size: 0.8em;
+        border-radius: 10px; /* Smaller radius on mobile */
     }
     
     #leaderboard-table th,
     #leaderboard-table td {
         padding: 10px 5px;
+    }
+    
+    #leaderboard-table td:nth-child(2) {
+        text-align: center; /* Center name if space is tight */
+        padding-left: 5px;
     }
     
     .leaderboard-controls {
@@ -1294,20 +1391,6 @@ body {
         width: 100%;
         max-width: 250px;
     }
-}
-
-/* Light mode support */
-.light-mode #leaderboard-screen {
-    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
-}
-
-.light-mode #leaderboard-box {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-
-.light-mode #leaderboard-table tbody tr:hover {
-    background: linear-gradient(135deg, #f1f2f6, #dfe4ea);
 }
 
 /* Animation for new entries */

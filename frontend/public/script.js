@@ -25,36 +25,67 @@ const authMessage = document.getElementById('auth-message');
 const welcomeUserMessage = document.getElementById('welcome-user-message');
 const logoutBtn = document.getElementById('logout-btn');
 
-
+const fullnameInput = document.getElementById('fullname-input'); 
 
 // === AUTHENTICATION FUNCTIONS ===
 let isRegisterMode = false;
 
 function toggleAuthMode() {
     isRegisterMode = !isRegisterMode;
-    
+    const authBox = document.querySelector('.login-box h2'); // Assuming the h2 is the title
+
     if (isRegisterMode) {
-        loginForm.querySelector('button').textContent = 'Register';
+        // --- SWITCH TO REGISTER MODE ---
+        authBox.textContent = 'Join the Quest!';
+        loginBtn.textContent = 'Register';
         registerToggleBtn.textContent = 'Already have an account? Login';
-        authMessage.textContent = '';
+        
+        // NEW: Show the fullname input field for registration
+        fullnameInput.style.display = 'block'; 
+        fullnameInput.required = true; // Make it required for registration
+
     } else {
-        loginForm.querySelector('button').textContent = 'Login';
+        // --- SWITCH BACK TO LOGIN MODE ---
+        authBox.textContent = 'Welcome, Seeker!';
+        loginBtn.textContent = 'Login';
         registerToggleBtn.textContent = 'Need an Account? Register';
-        authMessage.textContent = '';
+        
+        // NEW: Hide and clear the fullname input field for login
+        fullnameInput.style.display = 'none';
+        fullnameInput.required = false;
+        fullnameInput.value = ''; // Clear any entered value
     }
+    
+    // Clear any previous error messages
+    showAuthMessage('', false);
 }
 
+// Add the event listener (if not already present in your script)
+if (registerToggleBtn) {
+    registerToggleBtn.addEventListener('click', toggleAuthMode);
+}
 /**
  * Handles user authentication (login/register)
  */
 async function handleAuth(event) {
     event.preventDefault();
     
+    // 1. ASSUME: A variable for the fullname input exists globally or is passed here.
+    // We'll define a constant for it here for clarity, assuming it's available.
+    const fullnameInput = document.getElementById('fullname-input'); // Hypothetical element
+    
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
+    const fullname = fullnameInput ? fullnameInput.value.trim() : ''; // Get fullname if the element exists
     
     if (!username || !password) {
         showAuthMessage('Please enter both username and password', true);
+        return;
+    }
+    
+    // NEW: Check for fullname only during registration
+    if (isRegisterMode && !fullname) {
+        showAuthMessage('Please enter your full name for registration', true);
         return;
     }
     
@@ -63,11 +94,15 @@ async function handleAuth(event) {
         
         console.log('Attempting authentication to:', endpoint);
         
-        // Use JSON for both register and login
-        const requestBody = {
+        let requestBody = {
             username: username,
             password: password
         };
+
+        // 2. NEW: Add fullname to the requestBody only during registration
+        if (isRegisterMode) {
+            requestBody.fullname = fullname;
+        }
 
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -87,6 +122,7 @@ async function handleAuth(event) {
                 toggleAuthMode();
                 usernameInput.value = '';
                 passwordInput.value = '';
+                if (fullnameInput) fullnameInput.value = ''; // Clear fullname input
             } else {
                 const errorText = await response.text();
                 showAuthMessage(errorText || 'Registration failed. Please try a different username.', true);
@@ -108,7 +144,6 @@ async function handleAuth(event) {
         showAuthMessage(`Network error: ${error.message}. Make sure the Spring Boot backend is running on port 8085.`, true);
     }
 }
-
 function showAuthMessage(message, isError) {
     authMessage.textContent = message;
     authMessage.className = isError ? 'error-message' : 'success-message';
@@ -341,7 +376,7 @@ const ANIMAL_CATEGORIES = {
     "Jungle": { initial: ["Cat 🐈", "Dog 🐕", "Monkey 🐒", "Rabbit 🐇","Sheep 🐑","Bird 🐦","Fish 🐟"] },
     "Ocean": { initial: ["Dolphin 🐬", "Shark 🦈", "Whale 🐳", "Crab 🦀","Squid 🦑","Eel 𓆙","Manta Ray 🐙","Turtle 🐢"] },
     "Insect": { initial: ["Ant 🐜", "Bee 🐝", "Fly 🪰", "Spider 🕷️"] },
-    "Mythical": { initial: ["Unicorn 🦄", "Dragon 🐉", "Phoenix 🔥", "Mermaid 🧜‍♀️"] },
+    "Mythical": { initial: ["Human 🤵‍♂️", "Wolf 🐺", "Horse 🐴", "Lizard 🦎","Butterfly 🦋","Fish 🐟","Snake 🐍", "Lion 🦁","Rhino 🦏","Gnome 👶"] },
     "Jurassic": { initial: ["Dinosaur 🦖", "Pterosaur 🦅", "Plesiosaur 🦕", "Triceratops 🦏"] },
     "Cat Family": { initial: ["Cat 🐈", "Leopard 🐆"] },
     "Swamp": { initial: ["Frog 🐸", "Alligator 🐊", "Snake 🐍", "Turtle 🐢"] }
