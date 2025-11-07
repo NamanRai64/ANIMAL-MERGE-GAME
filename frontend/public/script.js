@@ -538,7 +538,9 @@ categoryGrid.addEventListener('click', (e) => {
     startGameBtn.disabled = false;
 });
 
-startGameBtn.addEventListener('click', () => {
+// ...existing code...
+
+startGameBtn.addEventListener('click', async () => {
     if (!selectedCategory) return;
     
     // Get selected time
@@ -556,8 +558,13 @@ startGameBtn.addEventListener('click', () => {
     renderInventory();
     updateHUD();
     
+    // Ensure audio is unlocked and file exists before trying to play BGM
+    await ensureAudioUnlocked();
+    playBGM();
+    
     if (maxTimeInSeconds > 0) startTimer();
 });
+// ...existing code...
 
 // === GAME LIFECYCLE ===
 function resetGameState() {
@@ -581,7 +588,12 @@ function resetGameState() {
     warningOverlay.classList.remove('active');
 }
 
+// ...existing code...
+
 async function endGame() {
+    // stop background music when game ends
+    stopBGM();
+
     gameScreen.classList.add('hidden');
     gameScreen.classList.remove('active');
     gameOverScreen.classList.remove('hidden');
@@ -606,9 +618,16 @@ async function endGame() {
         submissionStatusMessage.textContent = 'Failed to submit score.';
     }
 }
+// ...existing code...
+
+// ...existing code...
 
 function resetToMenu() {
     clearInterval(timerInterval);
+
+    // stop background music when returning to menu
+    stopBGM();
+
     gameScreen.classList.add('hidden');
     gameScreen.classList.remove('active');
     gameOverScreen.classList.add('hidden');
@@ -626,6 +645,7 @@ function resetToMenu() {
     startGameBtn.disabled = true;
     nextToTimeBtn.disabled = true; // Reset next button state
 }
+// ...existing code...
 
 // === UI & RENDERING ===
 function renderInventory() {
@@ -691,6 +711,58 @@ function updateHUD() {
     });
 });
 
+// ...existing code...
+
+/* --- ADDED: lightweight audio helper for merge responses --- */
+async function playMergeAudio(type = 'merge') {
+    // Prefer project audio files if available, else fallback to WebAudio beep.
+    const audioFiles = {
+        merge: '../assets/sounds/',
+        success: '../assets/sounds/sonido-correcto-331225.mp3',
+        fail: '../assets/sounds/InvalidMergeSample1.mp3',
+        new: '../assets/sounds/sonido-correcto-331225.mp3'
+    };
+
+    const src = audioFiles[type] || audioFiles.merge;
+    try {
+        const audio = new Audio(src);
+        // Some browsers block autoplay until user interacts; catch promise rejection.
+        await audio.play();
+    } catch (err) {
+        // Fallback: brief beep using WebAudio
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioCtx();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine';
+
+            // Different tone for success vs fail
+            if (type === 'fail') o.frequency.value = 220;
+            else if (type === 'new') o.frequency.value = 880;
+            else o.frequency.value = 440;
+
+            g.gain.value = 0.0001;
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+
+            // quick fade-in/out
+            g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+            o.stop(ctx.currentTime + 0.23);
+
+            // close context after sound finishes
+            setTimeout(() => {
+                if (ctx.close) ctx.close();
+            }, 300);
+        } catch (e) {
+            // ignore if even WebAudio isn't available
+        }
+    }
+}
+// ...existing code...
+
 async function checkMerge() {
     const item1 = mergeZone.A;
     const item2 = mergeZone.B;
@@ -703,18 +775,24 @@ async function checkMerge() {
         const response = await fetch(`http://localhost:8085/api/merge?itemA=${encodeURIComponent(item1)}&itemB=${encodeURIComponent(item2)}`, {
             method: 'GET'
         });
-        
-        if (!response.ok) {
+
+        // Play an audio cue on receiving the response (success vs server error)
+        if (response.ok) {
+            // play a generic merge-received sound; final success/fail sound played after parsing
+            playMergeAudio('merge').catch(() => {});
+        } else {
+            playMergeAudio('fail').catch(() => {});
             showToast("Server error during merge lookup. Status: " + response.status, 3000);
             mergeResultEl.textContent = 'ERROR';
             return;
         }
-
+        
         const data = await response.json();
         result = data.result;
 
     } catch (e) {
         console.error("Failed to connect to merge API:", e);
+        playMergeAudio('fail').catch(() => {});
         showToast("Connection failed. Check Spring Boot server status.", 3000);
         mergeResultEl.textContent = '... Nothing!';
         return;
@@ -729,11 +807,13 @@ async function checkMerge() {
         inventory.push(result);
         
         if (isNewDiscovery) { 
+            playMergeAudio('new').catch(() => {}); // new discovery sound
             showToast(getRandomMessage(NEW_DISCOVERY_MESSAGES, result));
             discoveries.push(result);
             discoveryCount++;
             score += (score%10000)+160; // Base 10 + 50 for new discovery
         } else {
+            playMergeAudio('success').catch(() => {}); // repeat-success sound
             showToast(getRandomMessage(REPEAT_DISCOVERY_MESSAGES, result));
             score += 50;
         }
@@ -741,6 +821,7 @@ async function checkMerge() {
         mergeResultEl.textContent = `= ${result}`;
         
     } else {
+        playMergeAudio('fail').catch(() => {}); // failed merge sound
         showToast(getRandomMessage(INVALID_MERGE_MESSAGES));
         mergeResultEl.textContent = '... Nothing!';
         score = Math.max(0, score - 185); // Penalty for failed merge
@@ -757,7 +838,7 @@ async function checkMerge() {
     renderInventory();
     updateHUD();
 }
-
+// ...existing code...v
 // === DARK/LIGHT MODE TOGGLE LOGIC ===
 function setMode(isLight) {
     if (isLight) {
@@ -876,11 +957,89 @@ if (exitBtn) {
         }
     });
 }
+// ...existing code...
+
+/* --- ADDED: Jungle BGM (plays in loop when game starts) --- */
+// Use an explicit relative path and add diagnostics handlers
+const jungleBgm = new Audio('../assets/sounds/JUNGLE_BGM(3).mp3');
+jungleBgm.loop = true;
+jungleBgm.preload = 'auto';
+jungleBgm.volume = 0.45; // adjust as needed
+jungleBgm.muted = false;
+
+jungleBgm.addEventListener('canplaythrough', () => {
+    console.log('Jungle BGM can play through.');
+});
+jungleBgm.addEventListener('error', (e) => {
+    console.error('Jungle BGM load error', e);
+    showToast('Failed to load Jungle BGM. Check assets/sounds/JUNGLE_BGM(3).mp3', 5000);
+});
+
+async function ensureAudioUnlocked() {
+    // Try to resume WebAudio AudioContext (required by some browsers)
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+            const ctx = new AudioCtx();
+            if (ctx.state === 'suspended') {
+                await ctx.resume();
+                console.log('AudioContext resumed.');
+            }
+            // close the temporary context if supported
+            if (ctx.close) ctx.close();
+        }
+    } catch (e) {
+        console.warn('AudioContext resume failed (non-critical):', e);
+    }
+
+    // Check that the BGM file exists (quick HEAD request)
+    try {
+        const res = await fetch('./assets/sounds/JUNGLE_BGM(3).mp3', { method: 'HEAD' });
+        if (!res.ok) {
+            console.warn('BGM file HEAD check failed with status', res.status);
+            showToast('BGM file not found on server. Check assets path.', 5000);
+            return false;
+        }
+    } catch (err) {
+        console.warn('BGM file HEAD check error (network?):', err);
+        // network failures shouldn't block the rest; allow attempt to play so user sees logged errors
+        return true;
+    }
+
+    return true;
+}
+
+function playBGM() {
+    try {
+        // attempt to play; catch and log any promise rejection to show why it's blocked
+        jungleBgm.currentTime = 0;
+        jungleBgm.play().then(() => {
+            console.log('Jungle BGM playing.');
+        }).catch(err => {
+            console.warn('BGM play() rejected:', err);
+            showToast('Audio playback blocked by browser. Interact (click) to enable sound.', 4000);
+        });
+    } catch (e) {
+        console.warn('BGM play error', e);
+    }
+}
+
+function stopBGM() {
+    try {
+        jungleBgm.pause();
+        jungleBgm.currentTime = 0;
+    } catch (e) {
+        // ignore
+    }
+}
+// ...existing code...
 
 if (pauseBtn) {
     pauseBtn.addEventListener('click', () => {
         if (isPaused) return;
         isPaused = true;
+        // pause BGM when game is paused
+        stopBGM();
         if (pauseScreen) {
             pauseScreen.classList.remove('hidden');
             pauseScreen.classList.add('active');
@@ -892,12 +1051,15 @@ if (resumeBtn) {
     resumeBtn.addEventListener('click', () => {
         if (!isPaused) return;
         isPaused = false;
+        // resume BGM when game resumes
+        playBGM();
         if (pauseScreen) {
             pauseScreen.classList.add('hidden');
             pauseScreen.classList.remove('active');
         }
     });
 }
+// ...existing code...
 
 if (restartBtn) {
     restartBtn.addEventListener('click', async () => {
